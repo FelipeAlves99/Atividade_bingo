@@ -14,6 +14,7 @@ namespace bingo_api.Mapping
 
             builder.HasOne(bc => bc.Player)
                 .WithOne(p => p.BingoCard)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

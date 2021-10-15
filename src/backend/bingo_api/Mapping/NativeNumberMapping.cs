@@ -15,6 +15,7 @@ namespace bingo_api.Mapping
             builder.HasOne(nn => nn.BingoCard)
                 .WithMany(bc => bc.NativeNumbers)
                 .HasForeignKey(nn => nn.BingoCardId)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -15,6 +15,7 @@ namespace bingo_api.Mapping
             builder.HasOne(p => p.GameSession)
                 .WithMany(gs => gs.Players)
                 .HasForeignKey(p => p.GameSessionId)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

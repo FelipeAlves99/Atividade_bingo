@@ -1,5 +1,6 @@
 ﻿using bingo_api.Data;
 using bingo_api.Entities;
+using bingo_api.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -43,11 +44,12 @@ namespace bingo_api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Player>> PostPlayer(Player player)
+        public async Task<ActionResult<Player>> PostPlayer(PlayerRequest playerRequest)
         {
-            if (await _context.GameSessions.AnyAsync(gs => gs.Id == player.GameSessionId) is false)
+            if (await _context.GameSessions.AnyAsync(gs => gs.Id == playerRequest.GameSessionId) is false)
                 return NotFound("Sessão de jogo não encontrada");
 
+            var player = new Player(playerRequest.Name, playerRequest.GameSessionId);
             _context.Players.Add(player);
             await _context.SaveChangesAsync();
 

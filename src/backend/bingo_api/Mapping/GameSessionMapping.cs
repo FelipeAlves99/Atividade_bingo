@@ -11,10 +11,6 @@ namespace bingo_api.Mapping
             builder.ToTable("GameSessions");
 
             builder.HasKey(gs => gs.Id);
-
-            builder.HasMany(gs => gs.Players)
-                .WithOne(p => p.GameSession)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
