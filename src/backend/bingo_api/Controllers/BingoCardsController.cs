@@ -56,7 +56,7 @@ namespace bingo_api.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Created("GetBingoCard", "Cartão gerado");
+            return Created("GetBingoCard", bingoCard);
         }
 
         [HttpDelete("{id}")]
