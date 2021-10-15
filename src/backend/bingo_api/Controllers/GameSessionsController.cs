@@ -1,6 +1,5 @@
 ﻿using bingo_api.Data;
 using bingo_api.Entities;
-using bingo_api.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -47,10 +46,10 @@ namespace bingo_api.Controllers
                 .Include(gs => gs.Players)
                     .ThenInclude(p => p.BingoCard)
                         .ThenInclude(bc => bc.MarkedNumbers)
-                .FirstOrDefaultAsync(gs => gs.Id == id);                
+                .FirstOrDefaultAsync(gs => gs.Id == id);
 
             if (gameSession == null)
-                return NotFound();
+                return NotFound("Sessão de jogo não encontrada");
 
             return Ok(gameSession);
         }
@@ -77,44 +76,49 @@ namespace bingo_api.Controllers
             if (gameSession is null)
                 return NotFound("Sessão de jogo não encontrada");
 
-            gameSession.UpdateRound();
-
-            foreach (var player in gameSession.Players)
+            if (gameSession.GameStatus != EGameStatus.Finished)
             {
-                var bingoCard = player.BingoCard;
+                gameSession.UpdateRound();
 
-                if(bingoCard.HasNativeNumberToMark(number))
-                    _context.MarkedNumbers.Add(new MarkedNumber(number, bingoCard.Id));
-
-                if (bingoCard.NativeNumbers.Select(nn => nn.Number)
-                    .Except(bingoCard.MarkedNumbers.Select(mn => mn.Number)).Count() == 0)
+                foreach (var player in gameSession.Players)
                 {
-                    gameSession.UpdateStatus(EGameStatus.Finished);
-                    gameSession.SetWinner(player.Id);
+                    var bingoCard = player.BingoCard;
+
+                    if (bingoCard.HasNativeNumberToMark(number))
+                        _context.MarkedNumbers.Add(new MarkedNumber(number, bingoCard.Id));
+
+                    if (bingoCard.NativeNumbers.Select(nn => nn.Number)
+                        .Except(bingoCard.MarkedNumbers.Select(mn => mn.Number)).Count() == 0)
+                    {
+                        gameSession.UpdateStatus(EGameStatus.Finished);
+                        gameSession.SetWinner(player.Id);
+                    }
+                    else
+                        gameSession.UpdateStatus(EGameStatus.Started);
                 }
-                else
-                    gameSession.UpdateStatus(EGameStatus.Started);
+
+                _context.Update(gameSession);
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!GameSessionExists(id))
+                    {
+                        return NotFound("Sessão de jogo não encontrada");
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
             }
 
-            _context.Update(gameSession);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GameSessionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok("Este jogo já foi finalizado");
         }
 
         [HttpPost]

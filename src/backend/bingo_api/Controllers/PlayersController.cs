@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace bingo_api.Controllers
@@ -37,7 +36,7 @@ namespace bingo_api.Controllers
 
             if (player == null)
             {
-                return NotFound();
+                return NotFound("Jogador não encontrado");
             }
 
             return player;
@@ -60,17 +59,12 @@ namespace bingo_api.Controllers
         {
             var player = await _context.Players.FindAsync(id);
             if (player == null)
-                return NotFound();
+                return NotFound("Jogador não encontrado");
 
             _context.Players.Remove(player);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool PlayerExists(Guid id)
-        {
-            return _context.Players.Any(e => e.Id == id);
         }
     }
 }

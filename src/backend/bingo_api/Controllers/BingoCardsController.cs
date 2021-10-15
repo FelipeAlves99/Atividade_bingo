@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace bingo_api.Controllers
@@ -38,7 +37,7 @@ namespace bingo_api.Controllers
                 .FirstOrDefaultAsync(bc => bc.Id == id);
 
             if (bingoCard == null)
-                return NotFound();
+                return NotFound("Cartão não encontrado");
 
             return bingoCard;
         }
@@ -65,7 +64,7 @@ namespace bingo_api.Controllers
         {
             var bingoCard = await _context.BingoCards.FindAsync(id);
             if (bingoCard == null)
-                return NotFound();
+                return NotFound("Cartão não encontrado");
 
             _context.BingoCards.Remove(bingoCard);
             await _context.SaveChangesAsync();
