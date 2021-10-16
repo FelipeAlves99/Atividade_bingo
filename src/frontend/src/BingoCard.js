@@ -1,55 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card } from './Card';
+import { createBingoCard, fetchBingoCard } from './service/BingoCards';
+import { drawnNumber } from './service/GameSessions';
 
-export const BingoCard = ({ playerId }) => {
-  const API_URL = 'http://localhost:5000/api';
-  const [error, setError] = useState(false);
-  const [bingoCardId, setBingoCardId] = useState('');
+export const BingoCard = ({ playerId, name }) => {
   const [bingoCard, setBingoCard] = useState('');
-  const [showCard, setShowCard] = useState(false);
+  const [numerosSorteados, setNumerosSorteados] = useState([]);
+  const [show, setShow] = useState(true);
 
-  const generateBingoCard = (e) => {
-    e.preventDefault();
-    fetch(`${API_URL}/BingoCards/${playerId}`, {
-      method: 'POST',
-    })
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((data) => {
-        setBingoCardId(data.id);
-      })
-      .catch((error) => {
-        setError(true);
-      });
+  const generateBingoCard = async (e) => {
+    const bingoCardId = await createBingoCard(playerId);
+    const bingoCard = await fetchBingoCard(bingoCardId.data.id);
+    setBingoCard(bingoCard.data);
+    setShow(false);
   };
 
-  useEffect(() => {
-    fetch(`${API_URL}/BingoCards/${bingoCardId}`, {
-      method: 'GET',
-    })
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((data) => {
-        setBingoCard(data);
-        setShowCard(true);
-      })
-      .catch((error) => {
-        setError(true);
-      });
-  }, [bingoCardId]);
+  const sortearNumero = async (e) => {
+    const numeros = await drawnNumber();
+    setNumerosSorteados([numeros.data, ...numerosSorteados]);
+  };
 
   return (
     <div>
-      <button onClick={generateBingoCard}>Gerar cartela</button>
-      {showCard ? (
-        <div style={{ display: 'grid', gridTemplateColumns: '100px 100px', border: '1px solid red', width: 200 }}>
-          <Card bingoCard={bingoCard} />
+      {name}
+      {show && <button onClick={generateBingoCard}>Gerar cartela</button>}
+      {bingoCard?.nativeNumbers?.length > 0 ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '50px 50px 50px 50px 50px', border: '1px solid red', width: 'fit-content' }}>
+          <span>B</span>
+          <span>I</span>
+          <span>N</span>
+          <span>G</span>
+          <span>O</span>
+          <Card bingoCard={bingoCard} numerosSorteados={numerosSorteados} />
         </div>
       ) : (
         ''
       )}
+      {!show && <button onClick={sortearNumero}>Sortear Numero</button>}
     </div>
   );
 };

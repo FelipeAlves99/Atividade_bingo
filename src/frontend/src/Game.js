@@ -1,40 +1,36 @@
 import { useState } from 'react';
 import { BingoCard } from './BingoCard';
+import { player } from './service/Players';
 
 export const Game = ({ gameId }) => {
-  const API_URL = 'http://localhost:5000/api';
-
   const [playerId, setPlayerId] = useState('');
   const [playerName, setPlayerName] = useState('');
+  const [show, setShow] = useState(true);
+  const [name, setName] = useState('');
 
   const registerPlayer = (e) => {
-    e.preventDefault();
-    fetch(`${API_URL}/Players`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    (async () => {
+      const body = {
         gameSessionId: gameId,
         name: playerName,
-      }),
-    })
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((data) => {
-        setPlayerId(data.id);
-        console.log('Player', data);
-      })
-      .catch((error) => {});
+      };
+      const newPlayer = await player(JSON.stringify(body));
+      setPlayerId(newPlayer.data.id);
+      setName(playerName);
+      setShow(false);
+    })();
   };
 
   return (
-    <div>
-      <input type='text' placeholder='digite seu nome' onChange={(e) => setPlayerName(e.target.value)} />
-      <button onClick={registerPlayer}>Send</button>
-      gameID {gameId}
-      <BingoCard playerId={playerId} />
+    <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', height: '100%', alignItems: 'center' }}>
+      {show && (
+        <div>
+          <input type='text' placeholder='digite seu nome' onChange={(e) => setPlayerName(e.target.value)} />
+          <button onClick={registerPlayer}>Send</button>
+        </div>
+      )}
+
+      {!show && <BingoCard name={name} playerId={playerId} />}
     </div>
   );
 };

@@ -1,34 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Game } from './Game';
+import { initGame } from './service/GameSessions';
 
-const API_URL = 'http://localhost:5000/api';
 function App() {
-  const [startGame, setStartGame] = useState(false);
-  const [gameId, setGameId] = useState();
-  const [error, setError] = useState(false);
+  const [gameId, setGameId] = useState('');
 
   useEffect(() => {
-    fetch(`${API_URL}/GameSessions`, {
-      method: 'POST',
-    })
-      .then((resp) => {
-        return resp.json();
-      })
-      .then((data) => {
-        setStartGame(true);
-        setGameId(data.id);
-      })
-      .catch((error) => {
-        setError(true);
-      });
-  }, [startGame]);
+    (async () => {
+      const game = await initGame();
+      setGameId(game.data.id);
+    })();
+  }, []);
 
-  return (
-    <div>
-      {error && <div>Erro</div>}
-      {gameId && <Game gameId={gameId} />}
-    </div>
-  );
+  return <div style={{ height: '100vh', width: '100vw' }}>{<Game gameId={gameId} />}</div>;
 }
 
 export default App;
