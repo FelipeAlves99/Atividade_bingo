@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BingoCard } from './BingoCard';
-import { player } from './service/Players';
+import { player } from '../service/Players';
 
 export const Game = ({ gameId }) => {
   const [playerId, setPlayerId] = useState('');
@@ -26,11 +26,12 @@ export const Game = ({ gameId }) => {
       {show && (
         <div>
           <input type='text' placeholder='digite seu nome' onChange={(e) => setPlayerName(e.target.value)} />
-          <button onClick={registerPlayer}>Send</button>
+          <br />
+          <button onClick={registerPlayer}>Jogar!</button>
         </div>
       )}
 
-      {!show && <BingoCard name={name} playerId={playerId} />}
+      {!show && <BingoCard name={name} playerId={playerId} gameId={gameId} />}
     </div>
   );
 };

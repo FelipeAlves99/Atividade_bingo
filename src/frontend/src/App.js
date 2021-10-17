@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Game } from './Game';
+import { Game } from './components/Game';
 import { initGame } from './service/GameSessions';
 
 function App() {
@@ -12,7 +12,11 @@ function App() {
     })();
   }, []);
 
-  return <div style={{ height: '100vh', width: '100vw' }}>{<Game gameId={gameId} />}</div>;
+  return (
+    <div className='content' style={{ height: '105vh', width: '100vw', boxSizing: 'content-box' }}>
+      <Game gameId={gameId} />
+    </div>
+  );
 }
 
 export default App;

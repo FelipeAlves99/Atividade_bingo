@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Rampart+One&display=swap');
+
+body {
+  margin: 0px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  font-family: 'Rampart One', cursive;
+}
+
+.content {
+  /* this is needed or the background will be offset by a few pixels at the top */
+  overflow: auto;
+  position: relative;
+}
+
+.content::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+
+  display: block;
+  background-image: url('./assets/images/bingo-background.jpeg');
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+
+  -webkit-filter: blur(3px);
+  -moz-filter: blur(3px);
+  -o-filter: blur(3px);
+  -ms-filter: blur(3px);
+  filter: blur(3px);
+}
+
+button {
+  background: #d934d3;
+  background-image: -webkit-linear-gradient(top, #d934d3, #2b36b8);
+  background-image: -moz-linear-gradient(top, #d934d3, #2b36b8);
+  background-image: -ms-linear-gradient(top, #d934d3, #2b36b8);
+  background-image: -o-linear-gradient(top, #d934d3, #2b36b8);
+  background-image: linear-gradient(to bottom, #d934d3, #2b36b8);
+  -webkit-border-radius: 60;
+  -moz-border-radius: 60;
+  border-radius: 60px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 24px;
+  padding: 10px 30px 10px 30px;
+  text-decoration: none;
+  border: none;
+  margin: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #d197cf;
+  background-image: -webkit-linear-gradient(top, #d197cf, #6d74ba);
+  background-image: -moz-linear-gradient(top, #d197cf, #6d74ba);
+  background-image: -ms-linear-gradient(top, #d197cf, #6d74ba);
+  background-image: -o-linear-gradient(top, #d197cf, #6d74ba);
+  background-image: linear-gradient(to bottom, #d197cf, #6d74ba);
+  text-decoration: none;
+}
+
+input {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-width: 1px;
+  border-color: #cccccc;
+  background-color: #ffffff;
+  color: #000000;
+  border-style: solid;
+  border-radius: 60px;
+  box-shadow: 0px 0px 0px rgba(66, 66, 66, 0.75);
+}
+input:focus {
+  outline: none;
+}
