@@ -25,7 +25,7 @@ export const BingoCard = ({ playerId, name, gameId }) => {
       <div>
         {show && <button onClick={generateBingoCard}>Gerar cartela</button>}
         {bingoCard?.nativeNumbers?.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', border: '5px solid lightblue', borderRadius: '15px', width: 'fit-content', padding: 10, fontSize: '60px', backgroundColor: 'rgba(255, 255, 255 , 0.6)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', border: '5px solid #0266aa', borderRadius: '15px', width: 'fit-content', padding: 10, fontSize: '60px', backgroundColor: 'rgba(255, 255, 255 , 1)' }}>
             <span>B</span>
             <span>I</span>
             <span>N</span>
@@ -39,7 +39,7 @@ export const BingoCard = ({ playerId, name, gameId }) => {
         {!show && <button onClick={sortearNumero}>Sortear Numero</button>}
       </div>
       {!show && (
-        <div style={{ marginLeft: 50, border: '5px solid lightblue', borderRadius: '15px', padding: 10, backgroundColor: 'rgba(255, 255, 255 , 0.6)' }}>
+        <div style={{ marginLeft: 50, border: '5px solid #0266aa', borderRadius: '15px', padding: 10, backgroundColor: 'rgba(255, 255, 255 , 1)' }}>
           <span style={{ fontSize: '30px' }}>Jogador: {name}</span>
           <p style={{ fontSize: '20px' }}> Números sorteados:</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr' }}>
