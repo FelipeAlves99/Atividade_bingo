@@ -28,7 +28,7 @@ namespace bingo_api.Entities
 
         public void FillNativeNumbers()
         {
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var number = _random.Next(1, 99);
 
