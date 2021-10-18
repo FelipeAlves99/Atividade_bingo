@@ -60,22 +60,6 @@ namespace bingo_api.Controllers
             if (Guid.TryParse(id, out Guid idOut) is false)
                 return BadRequest("Id informado é inválido.");
 
-            if (await _context.GameSessions.FindAsync(idOut) is null)
-                return NotFound("Sessão de jogo não encontrada.");
-
-            var number = _random.Next(1, 99);
-
-            while (StaticHelpers.oldDrawnNumbers.Contains(new Tuple<Guid, int>(idOut, number)))
-                number = _random.Next(1, 99);
-
-            StaticHelpers.oldDrawnNumbers.Add(new Tuple<Guid, int>(idOut, number));
-
-            return Ok(number);
-        }
-
-        [HttpPut("{id}/{number}")]
-        public async Task<IActionResult> UpdateGameSession([FromRoute] Guid id, [FromRoute] int number)
-        {
             var gameSession = await _context.GameSessions
                 .AsNoTracking()
                 .Include(gs => gs.Players)
@@ -84,11 +68,18 @@ namespace bingo_api.Controllers
                 .Include(gs => gs.Players)
                     .ThenInclude(p => p.BingoCard)
                         .ThenInclude(bc => bc.MarkedNumbers)
-                .FirstOrDefaultAsync(gs => gs.Id == id);
+                .FirstOrDefaultAsync(gs => gs.Id == idOut);
 
             if (gameSession is null)
                 return NotFound("Sessão de jogo não encontrada");
 
+            var number = _random.Next(1, 99);
+
+            while (StaticHelpers.oldDrawnNumbers.Contains(new Tuple<Guid, int>(idOut, number)))
+                number = _random.Next(1, 99);
+
+            StaticHelpers.oldDrawnNumbers.Add(new Tuple<Guid, int>(idOut, number));
+            
             if (gameSession.GameStatus != EGameStatus.Finished)
             {
                 gameSession.UpdateRound();
@@ -96,28 +87,6 @@ namespace bingo_api.Controllers
                 foreach (var player in gameSession.Players)
                 {
                     var bingoCard = player.BingoCard;
-
-                    foreach (var oldNumber in StaticHelpers.oldDrawnNumbers.Where(dn => dn.Item1 == gameSession.Id).Select(dn => dn.Item2))
-                    {
-                        if (await _context.MarkedNumbers.AnyAsync(mn => mn.Number == oldNumber))
-                            continue;
-
-                        if (bingoCard.HasNativeNumberToMark(oldNumber))
-                        {
-                            _context.MarkedNumbers.Add(new MarkedNumber(oldNumber, bingoCard.Id));
-
-                            if (bingoCard.NativeNumbers.Select(nn => nn.Number)
-                                .Except(bingoCard.MarkedNumbers.Select(mn => mn.Number)).Count() == 1)
-                            {
-                                gameSession.UpdateStatus(EGameStatus.Finished);
-                                gameSession.SetWinner(player.Id);
-                                StaticHelpers.oldDrawnNumbers.RemoveAll(dn => dn.Item1 == gameSession.Id);
-                                break;
-                            }
-                            else
-                                gameSession.UpdateStatus(EGameStatus.Started);
-                        }
-                    }
 
                     if (await _context.MarkedNumbers.AnyAsync(mn => mn.Number == number))
                         continue;
@@ -147,7 +116,7 @@ namespace bingo_api.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GameSessionExists(id))
+                    if (!GameSessionExists(idOut))
                     {
                         return NotFound("Sessão de jogo não encontrada");
                     }
@@ -157,7 +126,7 @@ namespace bingo_api.Controllers
                     }
                 }
 
-                return NoContent();
+                return Ok(new { number, gameSession });
             }
 
             return Ok("Este jogo já foi finalizado");

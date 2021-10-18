@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from './Card';
 import { createBingoCard, fetchBingoCard } from '../service/BingoCards';
-import { drawnNumber, gameStatus, updateGame } from '../service/GameSessions';
+import { drawnNumber } from '../service/GameSessions';
 
 export const BingoCard = ({ playerId, name, gameId }) => {
   const [bingoCard, setBingoCard] = useState({});
@@ -18,11 +18,10 @@ export const BingoCard = ({ playerId, name, gameId }) => {
   };
 
   const sortearNumero = async (e) => {
-    const numeros = await drawnNumber(gameId);
-    setNumerosSorteados([numeros.data, ...numerosSorteados]);
-    setLastNumber(numeros.data);
-    await updateGame(gameId, lastNumber);
-    await gameStatus();
+    const gameSession = await drawnNumber(gameId);
+    console.log(gameSession.data);
+    setNumerosSorteados([gameSession.data.number, ...numerosSorteados]);
+    setLastNumber(gameSession.data.number);
   };
 
   useEffect(() => {
