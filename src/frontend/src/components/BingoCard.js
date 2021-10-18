@@ -19,7 +19,6 @@ export const BingoCard = ({ playerId, name, gameId }) => {
 
   const sortearNumero = async (e) => {
     const gameSession = await drawnNumber(gameId);
-    console.log(gameSession.data);
     setNumerosSorteados([gameSession.data.number, ...numerosSorteados]);
     setLastNumber(gameSession.data.number);
   };
