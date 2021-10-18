@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from './Card';
 import { createBingoCard, fetchBingoCard } from '../service/BingoCards';
-import { drawnNumber } from '../service/GameSessions';
+import { drawnNumber, gameStatus, updateGame } from '../service/GameSessions';
 
 export const BingoCard = ({ playerId, name, gameId }) => {
   const [bingoCard, setBingoCard] = useState({});
@@ -21,14 +21,16 @@ export const BingoCard = ({ playerId, name, gameId }) => {
     const numeros = await drawnNumber(gameId);
     setNumerosSorteados([numeros.data, ...numerosSorteados]);
     setLastNumber(numeros.data);
+    await updateGame(gameId, lastNumber);
+    await gameStatus();
   };
 
   useEffect(() => {
     if (bingoCard?.nativeNumbers?.length > 0) {
-      const teste = bingoCard?.nativeNumbers.map((number) => number.number);
-      const testeNovo = numerosSorteados.filter((number) => teste.includes(number));
+      const cartela = bingoCard?.nativeNumbers.map((number) => number.number);
+      const status = numerosSorteados.filter((number) => cartela.includes(number));
 
-      if (testeNovo.length === 10) {
+      if (status.length === 10) {
         setBingo(true);
       }
     }
@@ -67,7 +69,7 @@ export const BingoCard = ({ playerId, name, gameId }) => {
           <p style={{ fontSize: '20px' }}> Números sorteados:</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr' }}>
             {numerosSorteados.map((number) => {
-              return <span>{number}</span>;
+              return <span key={number}>{number}</span>;
             })}
           </div>
         </div>
